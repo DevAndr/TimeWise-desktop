@@ -41,8 +41,6 @@ const createWindow = () => {
       mainWindow?.hide();
     }
   });
-
-  mainWindow.webContents.openDevTools();
 };
 
 function createTray() {

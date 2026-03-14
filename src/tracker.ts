@@ -148,6 +148,16 @@ export function getTodaySessions(): ActivitySession[] {
   return sessions.filter((s) => s.startTime >= ts);
 }
 
+export function getCurrentSession(): { appName: string; windowTitle: string; startTime: number; duration: number } | null {
+  if (!currentSession) return null;
+  return {
+    appName: currentSession.appName,
+    windowTitle: currentSession.windowTitle,
+    startTime: currentSession.startTime,
+    duration: Date.now() - currentSession.startTime,
+  };
+}
+
 export function clearSessions() {
   sessions = [];
 }

@@ -1,5 +1,5 @@
 import { ipcMain, net } from "electron";
-import { getSessions, getTodaySessions, startTracking, stopTracking } from "./tracker";
+import { getSessions, getTodaySessions, getCurrentSession, startTracking, stopTracking } from "./tracker";
 import { loadSessions, saveSessions } from "./store";
 import { getSyncConfig, setSyncConfig, syncSessions } from "./sync";
 import type { ActivitySession } from "./tracker";
@@ -24,6 +24,10 @@ export function registerIpcHandlers() {
 
   ipcMain.handle("tracker:today", (): ActivitySession[] => {
     return getTodaySessions();
+  });
+
+  ipcMain.handle("tracker:current", () => {
+    return getCurrentSession();
   });
 
   ipcMain.handle("tracker:history", (): ActivitySession[] => {

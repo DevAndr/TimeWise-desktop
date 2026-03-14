@@ -16,11 +16,19 @@ interface SyncConfig {
   apiToken: string;
 }
 
+interface CurrentSessionInfo {
+  appName: string;
+  windowTitle: string;
+  startTime: number;
+  duration: number;
+}
+
 interface ElectronAPI {
   startTracking: () => Promise<{ ok: boolean }>;
   stopTracking: () => Promise<{ ok: boolean }>;
   getSessions: () => Promise<ActivitySession[]>;
   getTodaySessions: () => Promise<ActivitySession[]>;
+  getCurrentSession: () => Promise<CurrentSessionInfo | null>;
   getHistory: () => Promise<ActivitySession[]>;
 
   syncNow: () => Promise<SyncResult>;

@@ -5,6 +5,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   stopTracking: () => ipcRenderer.invoke("tracker:stop"),
   getSessions: () => ipcRenderer.invoke("tracker:sessions"),
   getTodaySessions: () => ipcRenderer.invoke("tracker:today"),
+  getCurrentSession: () => ipcRenderer.invoke("tracker:current"),
   getHistory: () => ipcRenderer.invoke("tracker:history"),
 
   // Sync

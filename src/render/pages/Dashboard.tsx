@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
-import { RefreshCw, Settings, Clock, AppWindow, Monitor, Loader2, BarChart3 } from "lucide-react";
+import { RefreshCw, Settings, Clock, AppWindow, Monitor, Loader2, BarChart3, Activity } from "lucide-react";
 
 interface Session {
   appName: string;
@@ -107,6 +107,12 @@ export default function Dashboard() {
     refetchInterval: 5_000,
   });
 
+  const { data: currentSession } = useQuery({
+    queryKey: ["current-session"],
+    queryFn: () => window.electronAPI.getCurrentSession(),
+    refetchInterval: 1_000,
+  });
+
   const todayStats = aggregateByApp(todaySessions);
   const currentStats = aggregateByApp(allSessions);
 
@@ -166,6 +172,28 @@ export default function Dashboard() {
       </header>
 
       <main className="px-6 py-6 space-y-6">
+        {/* Current active app */}
+        {currentSession && (
+          <section className="bg-gray-900/50 rounded-2xl border border-indigo-500/30 p-4">
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <Activity size={20} className="text-indigo-400" />
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-white">{currentSession.appName}</span>
+                  <span className="text-xs text-green-400 font-medium">LIVE</span>
+                </div>
+                <p className="text-xs text-gray-500 truncate">{currentSession.windowTitle}</p>
+              </div>
+              <span className="text-sm font-mono text-indigo-300 tabular-nums">
+                {formatDuration(currentSession.duration)}
+              </span>
+            </div>
+          </section>
+        )}
+
         {/* Summary cards */}
         <div className="grid grid-cols-3 gap-4">
           <StatCard
@@ -199,9 +227,9 @@ export default function Dashboard() {
               <p className="text-sm">Трекер собирает данные...</p>
             </div>
           ) : (
-            <div className="h-64">
+            <div style={{ height: Math.max(200, todayStats.length * 36 + 40) }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={todayStats} layout="vertical" margin={{ left: 10, right: 20 }}>
+                <BarChart data={todayStats} layout="vertical" margin={{ left: 10, right: 20, top: 5, bottom: 5 }}>
                   <XAxis
                     type="number"
                     tickFormatter={(v) => `${v}м`}
