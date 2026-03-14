@@ -10,7 +10,6 @@ Add-Type @"
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Diagnostics;
 public class WinAPI {
   [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
   [DllImport("user32.dll")] public static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
@@ -21,9 +20,9 @@ $hwnd = [WinAPI]::GetForegroundWindow()
 $sb = New-Object System.Text.StringBuilder 512
 [WinAPI]::GetWindowText($hwnd, $sb, 512) | Out-Null
 $title = $sb.ToString()
-$pid = 0
-[WinAPI]::GetWindowThreadProcessId($hwnd, [ref]$pid) | Out-Null
-$proc = Get-Process -Id $pid -ErrorAction SilentlyContinue
+[uint32]$wpid = 0
+[WinAPI]::GetWindowThreadProcessId($hwnd, [ref]$wpid) | Out-Null
+$proc = Get-Process -Id $wpid -ErrorAction SilentlyContinue
 $name = if ($proc) { $proc.ProcessName } else { "Unknown" }
 Write-Output "$name|||$title"
 `;

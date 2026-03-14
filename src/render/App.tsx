@@ -1,12 +1,13 @@
-import React from 'react'
+import React from "react";
+import { Routes, Route } from "react-router";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <h1 className="text-2xl font-bold">Electron + Vite + React + TypeScript 🚀</h1>
-      <p>Дата: {new Date().toLocaleString()}</p>
-    </div>
-  )
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;
