@@ -1,15 +1,12 @@
-import Store from "electron-store";
+import { JsonStore } from "./json-store";
 import type { ActivitySession } from "./tracker";
 
 interface StoreSchema {
   sessions: ActivitySession[];
 }
 
-const store = new Store<StoreSchema>({
-  name: "activity-data",
-  defaults: {
-    sessions: [],
-  },
+const store = new JsonStore<StoreSchema>("activity-data", {
+  sessions: [],
 });
 
 export function loadSessions(): ActivitySession[] {

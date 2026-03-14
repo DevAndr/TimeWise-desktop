@@ -6,4 +6,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getSessions: () => ipcRenderer.invoke("tracker:sessions"),
   getTodaySessions: () => ipcRenderer.invoke("tracker:today"),
   getHistory: () => ipcRenderer.invoke("tracker:history"),
+
+  // Sync
+  syncNow: () => ipcRenderer.invoke("sync:now"),
+  getSyncConfig: () => ipcRenderer.invoke("sync:getConfig"),
+  setSyncConfig: (config: { apiUrl?: string; apiToken?: string }) =>
+    ipcRenderer.invoke("sync:setConfig", config),
+
+  // Analytics
+  apiFetch: (path: string) => ipcRenderer.invoke("api:fetch", path),
 });
