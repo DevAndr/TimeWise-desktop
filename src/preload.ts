@@ -1,2 +1,9 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
+import { contextBridge, ipcRenderer } from "electron";
+
+contextBridge.exposeInMainWorld("electronAPI", {
+  startTracking: () => ipcRenderer.invoke("tracker:start"),
+  stopTracking: () => ipcRenderer.invoke("tracker:stop"),
+  getSessions: () => ipcRenderer.invoke("tracker:sessions"),
+  getTodaySessions: () => ipcRenderer.invoke("tracker:today"),
+  getHistory: () => ipcRenderer.invoke("tracker:history"),
+});

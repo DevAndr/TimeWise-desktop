@@ -1,6 +1,9 @@
 import { app, BrowserWindow } from "electron";
 import path from "node:path";
 import started from "electron-squirrel-startup";
+import { registerIpcHandlers } from "./ipc";
+import { startTracking } from "./tracker";
+import { saveSessions } from "./store";
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -32,7 +35,15 @@ const createWindow = () => {
   mainWindow.webContents.openDevTools();
 };
 
-app.on("ready", createWindow);
+app.on("ready", () => {
+  registerIpcHandlers();
+  createWindow();
+
+  // Auto-start tracking when app launches
+  startTracking((sessions) => {
+    saveSessions(sessions);
+  });
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
