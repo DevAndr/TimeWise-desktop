@@ -53,7 +53,7 @@ function aggregateByApp(sessions: Session[]): AppStat[] {
     .map(([appName, data]) => ({
       appName,
       totalMs: data.totalMs,
-      totalMin: Math.round(data.totalMs / 60_000),
+      totalMin: Math.round((data.totalMs / 60_000) * 10) / 10,
       sessions: data.sessions,
       percent: totalMs > 0 ? Math.round((data.totalMs / totalMs) * 100) : 0,
     }))
@@ -113,7 +113,19 @@ export default function Dashboard() {
     refetchInterval: 1_000,
   });
 
-  const todayStats = aggregateByApp(todaySessions);
+  // Merge currentSession into today's sessions for live chart data
+  const todayWithLive: Session[] = [...todaySessions];
+  if (currentSession) {
+    todayWithLive.push({
+      appName: currentSession.appName,
+      windowTitle: currentSession.windowTitle,
+      startTime: currentSession.startTime,
+      endTime: Date.now(),
+      duration: currentSession.duration,
+    });
+  }
+
+  const todayStats = aggregateByApp(todayWithLive);
   const currentStats = aggregateByApp(allSessions);
 
   const totalTodayMs = todayStats.reduce((sum, s) => sum + s.totalMs, 0);
@@ -246,7 +258,7 @@ export default function Dashboard() {
                     tick={{ fill: "#d1d5db", fontSize: 12 }}
                   />
                   <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(99,102,241,0.08)" }} />
-                  <Bar dataKey="totalMin" radius={[0, 6, 6, 0]} barSize={20}>
+                  <Bar dataKey="totalMin" radius={[0, 6, 6, 0]} barSize={20} isAnimationActive={false}>
                     {todayStats.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}

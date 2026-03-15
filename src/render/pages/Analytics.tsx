@@ -64,9 +64,14 @@ function useAnalytics<T>(path: string, from: string, to: string) {
   return useQuery<T>({
     queryKey: ["analytics", fullPath],
     queryFn: async () => {
-      const res = await window.electronAPI.apiFetch<T>(fullPath);
-      if (res.error) throw new Error(res.error);
-      return res.data as T;
+     try {
+       const res = await window.electronAPI.apiFetch<T>(fullPath);
+       console.log(res)
+       if (res.error) throw new Error(res.error);
+       return res.data as T;
+     } catch (e) {
+       console.log('error', e);
+     }
     },
     staleTime: 30_000,
   });
@@ -177,8 +182,8 @@ export default function Analytics() {
   const compareData = (dailyCompare ?? []).map((d) => ({
     ...d,
     date: formatDate(d.date),
-    browserMin: Math.round(d.browserDuration / 60_000),
-    appMin: Math.round(d.appDuration / 60_000),
+    browserHours: +(d.browserDuration / 3_600_000).toFixed(1),
+    appHours: +(d.appDuration / 3_600_000).toFixed(1),
   }));
 
   return (
@@ -234,10 +239,10 @@ export default function Analytics() {
                   <BarChart data={compareData} margin={{ left: 10, right: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
                     <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 11 }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 11 }} tickFormatter={(v) => `${v}м`} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 11 }} tickFormatter={(v) => `${v}ч`} />
                     <Tooltip content={<ChartTooltip formatter={String} />} />
-                    <Bar dataKey="browserMin" name="Браузер" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16} />
-                    <Bar dataKey="appMin" name="Приложения" fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={16} />
+                    <Bar dataKey="browserHours" name="Браузер" fill="#6366f1" radius={[4, 4, 0, 0]} barSize={16} />
+                    <Bar dataKey="appHours" name="Приложения" fill="#8b5cf6" radius={[4, 4, 0, 0]} barSize={16} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -252,7 +257,7 @@ export default function Analytics() {
               ) : (
                 <div className="h-52">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={appsTimeline.map((t) => ({ ...t, date: formatDate(t.period), min: Math.round(t.totalDuration / 60_000) }))}>
+                    <AreaChart data={appsTimeline.map((t) => ({ ...t, date: formatDate(t.period), hours: +(t.totalDuration / 3_600_000).toFixed(1) }))}>
                       <defs>
                         <linearGradient id="gradApps" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.3} />
@@ -261,9 +266,9 @@ export default function Analytics() {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
                       <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 10 }} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 10 }} tickFormatter={(v) => `${v}м`} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: "#6b7280", fontSize: 10 }} tickFormatter={(v) => `${v}ч`} />
                       <Tooltip content={<ChartTooltip formatter={String} />} />
-                      <Area type="monotone" dataKey="min" stroke="#8b5cf6" strokeWidth={2} fill="url(#gradApps)" />
+                      <Area type="monotone" dataKey="hours" stroke="#8b5cf6" strokeWidth={2} fill="url(#gradApps)" />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
