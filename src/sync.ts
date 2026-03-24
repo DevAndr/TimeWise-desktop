@@ -5,6 +5,7 @@ import { net } from "electron";
 interface SyncConfig {
   apiUrl: string;
   apiToken: string;
+  browserToken: string;
 }
 
 interface SyncState {
@@ -14,6 +15,7 @@ interface SyncState {
 const configStore = new JsonStore<SyncConfig>("sync-config", {
   apiUrl: "http://192.168.50.233:3031",
   apiToken: "",
+  browserToken: "",
 });
 
 const syncStateStore = new JsonStore<SyncState>("sync-state", {
@@ -24,12 +26,14 @@ export function getSyncConfig(): SyncConfig {
   return {
     apiUrl: configStore.get("apiUrl"),
     apiToken: configStore.get("apiToken"),
+    browserToken: configStore.get("browserToken"),
   };
 }
 
 export function setSyncConfig(config: Partial<SyncConfig>) {
   if (config.apiUrl !== undefined) configStore.set("apiUrl", config.apiUrl);
   if (config.apiToken !== undefined) configStore.set("apiToken", config.apiToken);
+  if (config.browserToken !== undefined) configStore.set("browserToken", config.browserToken);
 }
 
 function sessionToDto(session: ActivitySession) {

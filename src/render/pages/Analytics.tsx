@@ -66,7 +66,7 @@ function useAnalytics<T>(path: string, from: string, to: string) {
     queryFn: async () => {
      try {
        const res = await window.electronAPI.apiFetch<T>(fullPath);
-       console.log(res)
+       console.log(res, fullPath)
        if (res.error) throw new Error(res.error);
        return res.data as T;
      } catch (e) {

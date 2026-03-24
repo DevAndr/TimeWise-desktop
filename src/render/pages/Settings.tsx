@@ -6,17 +6,19 @@ export default function Settings() {
   const navigate = useNavigate();
   const [apiUrl, setApiUrl] = useState("");
   const [apiToken, setApiToken] = useState("");
+  const [browserToken, setBrowserToken] = useState("");
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     window.electronAPI.getSyncConfig().then((config) => {
       setApiUrl(config.apiUrl);
       setApiToken(config.apiToken);
+      setBrowserToken(config.browserToken);
     });
   }, []);
 
   const handleSave = async () => {
-    await window.electronAPI.setSyncConfig({ apiUrl, apiToken });
+    await window.electronAPI.setSyncConfig({ apiUrl, apiToken, browserToken });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -60,13 +62,27 @@ export default function Settings() {
             <div>
               <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
                 <Key size={14} />
-                API Token
+                API Token (приложения)
               </label>
               <input
                 type="password"
                 value={apiToken}
                 onChange={(e) => setApiToken(e.target.value)}
-                placeholder="Bearer token"
+                placeholder="Токен для приложений"
+                className="w-full bg-gray-800/50 border border-gray-700/50 rounded-xl px-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25 transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                <Key size={14} />
+                Browser Token (браузер)
+              </label>
+              <input
+                type="password"
+                value={browserToken}
+                onChange={(e) => setBrowserToken(e.target.value)}
+                placeholder="Токен для браузера"
                 className="w-full bg-gray-800/50 border border-gray-700/50 rounded-xl px-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/25 transition-all"
               />
             </div>

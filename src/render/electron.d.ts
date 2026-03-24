@@ -14,6 +14,7 @@ interface SyncResult {
 interface SyncConfig {
   apiUrl: string;
   apiToken: string;
+  browserToken: string;
 }
 
 interface CurrentSessionInfo {

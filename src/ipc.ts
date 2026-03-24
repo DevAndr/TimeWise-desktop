@@ -44,20 +44,23 @@ export function registerIpcHandlers() {
     return getSyncConfig();
   });
 
-  ipcMain.handle("sync:setConfig", (_event, config: { apiUrl?: string; apiToken?: string }) => {
+  ipcMain.handle("sync:setConfig", (_event, config: { apiUrl?: string; apiToken?: string; browserToken?: string }) => {
     setSyncConfig(config);
     return { ok: true };
   });
 
   // Analytics API proxy
   ipcMain.handle("api:fetch", async (_event, path: string) => {
-    const { apiUrl, apiToken } = getSyncConfig();
-    if (!apiToken) {
-      return { error: "API token not configured", data: null };
+    const { apiUrl, apiToken, browserToken } = getSyncConfig();
+    const isBrowserPath = /\/(browser|top-domains)(\/|$|\?)/.test(path);
+    const token = isBrowserPath ? browserToken : apiToken;
+    if (!token) {
+      return { error: `${isBrowserPath ? "Browser" : "API"} token not configured`, data: null };
     }
     try {
-      const response = await net.fetch(`${apiUrl}${path}`, {
-        headers: { Authorization: `Bearer ${apiToken}` },
+      const url = `${apiUrl}${path}`;
+      const response = await net.fetch(url, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) {
         const text = await response.text();
