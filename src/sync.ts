@@ -13,7 +13,7 @@ interface SyncState {
 }
 
 const configStore = new JsonStore<SyncConfig>("sync-config", {
-  apiUrl: "http://192.168.50.233:3031",
+  apiUrl: "http://192.168.1.88:3031",
   apiToken: "",
   browserToken: "",
 });
